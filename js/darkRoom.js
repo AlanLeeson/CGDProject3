@@ -26,7 +26,7 @@
 		scene = new THREE.Scene();
 		
 		camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
-		camera.position.y = 1;
+		camera.position.y = 0.75;
 		
 		cameraControls = new THREE.FirstPersonControls(camera);
         cameraControls.lookSpeed = 0.1;
@@ -36,6 +36,8 @@
 		createLighting();
 		createMaterials();
 		createModels();
+		
+		document.onmousedown = doMousedown;
 	
 		// get started!
 		update();
@@ -87,17 +89,7 @@
 	
 		//dirLight = new THREE.PointLight( 0xffffff, 2, 10 );
 		//dirLight.position.set( 0, 1, -5 );
-	//	scene.add( dirLight );
-	/*	
-		var shadowLight = new THREE.PointLight(0xffffff);
-		shadowLight.position.set(0,1,-5);
-		scene.add(shadowLight);
-		shadowLight.onlyShadow = true;
-	*/
-		var spotLight = new THREE.SpotLight(0xF8D898);
-		spotLight.position.set(0,0,460);
-		spotLight.intensity = 0.5;
-		spotLight.castShadow = true;
+		//scene.add( dirLight );
 	
 		//scene.add(spotLight);
 		flashlight = new THREE.SpotLight(0xffffff,4,10);
@@ -113,9 +105,34 @@
 		var delta = clock.getDelta();
 		cameraControls.update(delta);
 		box.position.set(cameraControls.target.x,cameraControls.target.y,cameraControls.target.z);
-		enemy.lookAt(camera.position);
 		flashlight.target = box;
+		enemy.lookAt(camera.position);
+		
+		enemy.translateOnAxis(enemy.worldToLocal(camera.position).normalize(),0.01);
+		camera.position.set(0,0.75,0);
+		
 		renderer.render(scene,camera);
+	}
+	
+	function doMousedown(event) {
+		event.preventDefault();
+		// 2D point where we clicked on the screen
+		var vector = new THREE.Vector3(( event.clientX / window.innerWidth ) * 2 - 1, -( event.clientY / window.innerHeight ) * 2 + 1, 0.5);
+	
+		// cast a ray from the camera to the 3D point we clicked on
+		var raycaster = new THREE.Raycaster();
+		// 2D point converted to 3D point in world
+		vector.unproject( camera );
+		raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
+	
+		// an array of objects we are checking for intersections
+		// you’ll need to put your own objects here
+		// make sure that these objects are declared in the global scope
+		var enemyClick = raycaster.intersectObjects([enemy]);
+	
+		if (enemyClick.length > 0) {
+			scene.remove(enemyClick[0].object);
+		}
 	}
 
 	document.body.onload = setup;

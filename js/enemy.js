@@ -2,9 +2,10 @@
 
 var ENEMY = Object.freeze({
 	enemyWidth: 1,
-	enemyHeight: 2,
+	enemyHeight: 1.5,
 	enemyDepth: 1,
-	enemyQuality: 1
+	enemyQuality: 1,
+	radius: 2
 });
 
 function setUpEnemy(){
@@ -16,3 +17,8 @@ function setUpEnemy(){
 	object.castShadow = true;
 	return object;
 }
+
+function attack(obj){
+	
+}
+
