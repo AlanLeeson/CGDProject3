@@ -8,7 +8,7 @@
 	
 	var MATERIAL = Object.seal({
 		boxMaterial: undefined,
-		floorMaterial: undefined
+		floorMaterial: undefined,
 	});
 	
 	function setup(){
@@ -26,8 +26,8 @@
 		camera.position.y = 1;
 		
 		cameraControls = new THREE.FirstPersonControls(camera);
-        cameraControls.lookSpeed = 0.4;
-        cameraControls.movementSpeed = 10;
+        cameraControls.lookSpeed = 0.1;
+        cameraControls.movementSpeed = 0;
         cameraControls.lookVertical = true;
 
 		createLighting();
@@ -48,7 +48,8 @@
 	function createModels(){	
 		var boxGeometry = new THREE.BoxGeometry(1,1,1);
 		for(var i = 0; i < 20; i++){
-			var object = new THREE.Mesh(boxGeometry,new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
+			//var object = new THREE.Mesh(boxGeometry,new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
+			var object = new THREE.Mesh(boxGeometry, new THREE.MeshLambertMaterial({color: "rgb(51,25,0)"}));
 			object.position.x = Math.random() * 15 - 5;
 			object.position.z = Math.random() * 15 - 5;
 			scene.add(object);
@@ -58,25 +59,26 @@
 		
 		box = new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 		scene.add(box);
-
-		var floor = new THREE.Mesh(
-			new THREE.PlaneGeometry(20,20,10),
-			MATERIAL.floorMaterial
-		);
-		floor.position.y = -0.5;
-		floor.position.z = 0;
-		floor.rotation.x = -0.5 * Math.PI;
-		scene.add(floor);
-		floor.receiveShadow = true;
+		
+		//building
+        var roomGeometry = new THREE.BoxGeometry(13, 5, 13);
+        var roomMaterial = new THREE.MeshLambertMaterial({color: "grey", side: THREE.BackSide});
+        var room = new THREE.Mesh(roomGeometry, roomMaterial);
+		room.position.set(0,2,0);
+		room.castShadow = true;
+		scene.add(room);
+		
+		
 	}
 	
 	function createLighting(){
 		var ambient = new THREE.AmbientLight( 0xffffff);
 		scene.add( ambient );
-		ambient.color.setHSL( 0.2, 0, 0.2 );
+		//ambient.color.setHSL( 0.03, 0.01, 0.03 );
+		ambient.color.setHSL( 0.05, 0.05, 0.05 );
 	
-		dirLight = new THREE.PointLight( 0xffffff, 2, 10 );
-		dirLight.position.set( 0, 1, -5 );
+		//dirLight = new THREE.PointLight( 0xffffff, 2, 10 );
+		//dirLight.position.set( 0, 1, -5 );
 	//	scene.add( dirLight );
 	/*	
 		var shadowLight = new THREE.PointLight(0xffffff);
@@ -86,7 +88,7 @@
 	*/
 		var spotLight = new THREE.SpotLight(0xF8D898);
 		spotLight.position.set(0,0,460);
-		spotLight.intensity = 1.5;
+		spotLight.intensity = 0.5;
 		spotLight.castShadow = true;
 	
 		//scene.add(spotLight);
