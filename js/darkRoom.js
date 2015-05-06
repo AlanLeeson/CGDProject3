@@ -3,17 +3,20 @@
 (function(){
 
 	var scene, camera, renderer, cameraControls, clock;
-	var box;
+	var box, enemy;
 	var dirLight, flashlight;
 	
 	var MATERIAL = Object.seal({
 		boxMaterial: undefined,
 		floorMaterial: undefined,
+		enemyMaterial: undefined
 	});
 	
 	function setup(){
 	
 		clock = new THREE.Clock();
+		
+		THREE.ImageUtils.crossOrigin = '';
 		
 		// create a WebGL renderer
 		renderer = new THREE.WebGLRenderer();
@@ -43,6 +46,10 @@
 		{
 			color : 0xffffff
 		});
+		MATERIAL.enemyMaterial = new THREE.MeshLambertMaterial(
+		{
+			map: THREE.ImageUtils.loadTexture('images/ghost.jpg')
+		});
 	}
 	
 	function createModels(){	
@@ -68,7 +75,8 @@
 		room.castShadow = true;
 		scene.add(room);
 		
-		
+		enemy = setUpEnemy();
+		scene.add(enemy);
 	}
 	
 	function createLighting(){
@@ -105,6 +113,7 @@
 		var delta = clock.getDelta();
 		cameraControls.update(delta);
 		box.position.set(cameraControls.target.x,cameraControls.target.y,cameraControls.target.z);
+		enemy.lookAt(camera.position);
 		flashlight.target = box;
 		renderer.render(scene,camera);
 	}
