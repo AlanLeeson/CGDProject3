@@ -10,8 +10,8 @@ var ENEMY = Object.freeze({
 function setUpEnemy(){
 	var boxGeometry = new THREE.BoxGeometry(ENEMY.enemyWidth,ENEMY.enemyHeight,ENEMY.enemyDepth);
 	var object = new THREE.Mesh(boxGeometry,new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture('images/ghost.jpg') } ) );
-	object.position.x = Math.random() * 15 - 5;
-	object.position.z = Math.random() * 15 - 5;
+	object.position.x = Math.random() * 12 - 6;
+	object.position.z = Math.random() * 12 - 6;
 	object.receiveShadow = true;
 	object.castShadow = true;
 	return object;

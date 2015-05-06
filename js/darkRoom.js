@@ -57,8 +57,8 @@
 		for(var i = 0; i < 20; i++){
 			//var object = new THREE.Mesh(boxGeometry,new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 			var object = new THREE.Mesh(boxGeometry, new THREE.MeshLambertMaterial({color: "rgb(51,25,0)"}));
-			object.position.x = Math.random() * 15 - 5;
-			object.position.z = Math.random() * 15 - 5;
+			object.position.x = Math.random() * 12 - 6;
+			object.position.z = Math.random() * 12 - 6;
 			scene.add(object);
 			object.receiveShadow = true;
 			object.castShadow = true;
