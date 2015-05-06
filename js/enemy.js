@@ -5,7 +5,7 @@ var ENEMY = Object.freeze({
 	enemyHeight: 1.5,
 	enemyDepth: 1,
 	enemyQuality: 1,
-	radius: 2
+	radius: 0.3
 });
 
 function setUpEnemy(){
