@@ -5,6 +5,7 @@
 	var scene, camera, renderer, cameraControls, clock;
 	var box, enemy;
 	var dirLight, flashlight;
+	var stareLength;
 	
 	var MATERIAL = Object.seal({
 		boxMaterial: undefined,
@@ -17,6 +18,7 @@
 		clock = new THREE.Clock();
 		
 		THREE.ImageUtils.crossOrigin = '';
+		stareLength = 0;
 		
 		// create a WebGL renderer
 		renderer = new THREE.WebGLRenderer();
@@ -26,12 +28,13 @@
 		scene = new THREE.Scene();
 		
 		camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
-		camera.position.y = 0.75;
+		camera.position.y = 0.5;
 		
 		cameraControls = new THREE.FirstPersonControls(camera);
-        cameraControls.lookSpeed = 0.1;
-        cameraControls.movementSpeed = 0;
+        cameraControls.lookSpeed = 0.2;
+        cameraControls.movementSpeed = 1;
         cameraControls.lookVertical = true;
+        
 
 		createLighting();
 		createMaterials();
@@ -61,6 +64,7 @@
 			var object = new THREE.Mesh(boxGeometry, new THREE.MeshLambertMaterial({color: "rgb(51,25,0)"}));
 			object.position.x = Math.random() * 12 - 6;
 			object.position.z = Math.random() * 12 - 6;
+			object.scale.y = Math.random()*1+1;
 			scene.add(object);
 			object.receiveShadow = true;
 			object.castShadow = true;
@@ -74,7 +78,7 @@
         var roomMaterial = new THREE.MeshLambertMaterial({color: "grey", side: THREE.BackSide});
         var room = new THREE.Mesh(roomGeometry, roomMaterial);
 		room.position.set(0,2,0);
-		room.castShadow = true;
+		room.receiveShadow = true;
 		scene.add(room);
 		
 		enemy = setUpEnemy();
@@ -83,20 +87,16 @@
 	
 	function createLighting(){
 		var ambient = new THREE.AmbientLight( 0xffffff);
-		scene.add( ambient );
-		//ambient.color.setHSL( 0.03, 0.01, 0.03 );
-		ambient.color.setHSL( 0.05, 0.05, 0.05 );
+		ambient.color.setHSL( 0.1, 0.1, 0.1 );
+		//ambient.color.setHSL( 0.05, 0.05, 0.05 );
+		scene.add(ambient);
 	
-		//dirLight = new THREE.PointLight( 0xffffff, 2, 10 );
-		//dirLight.position.set( 0, 1, -5 );
-		//scene.add( dirLight );
-	
-		//scene.add(spotLight);
 		flashlight = new THREE.SpotLight(0xffffff,4,10);
 		flashlight.castShadow = true;
 		scene.add(flashlight);
-		flashlight.position.set(camera.position.x,camera.position.y,camera.position.z);
+		flashlight.position.set(camera.position.x,camera.position.y-0.25,camera.position.z);
 		renderer.shadowMapEnabled = true;
+		renderer.shadowMapType = THREE.PCFSoftShadowMap;
 	}
 	
 	function update(){
@@ -105,11 +105,11 @@
 		var delta = clock.getDelta();
 		cameraControls.update(delta);
 		box.position.set(cameraControls.target.x,cameraControls.target.y,cameraControls.target.z);
+		flashlight.position.set(camera.position.x,camera.position.y-0.25,camera.position.z);
 		flashlight.target = box;
 		enemy.lookAt(camera.position);
 		
 		findDistance();
-		camera.position.set(0,0.75,0);
 		
 		renderer.render(scene,camera);
 	}
@@ -131,7 +131,8 @@
 		var enemyClick = raycaster.intersectObjects([enemy]);
 	
 		if (enemyClick.length > 0) {
-			scene.remove(enemyClick[0].object);
+			enemyClick[0].object.position.set(Math.random() * 12 - 6,0,Math.random() * 12 - 6);
+			stareLength = 0;
 		}
 	}
 	
@@ -175,14 +176,18 @@
 		}
 		
 		var leastDistance = Math.sqrt(dx * dx + dy * dy);
-		console.log(leastDistance);
 		//return Math.sqrt(dx * dx + dy * dy);
 		
 		if(leastDistance < ENEMY.radius){
-			enemy.translateOnAxis(enemy.worldToLocal(camera.position).normalize(),0.01);
-			console.log("truuuuuuee");
-			
-		}	
+			stareLength ++;
+		}else{
+			stareLength = 0;
+		}
+		if(stareLength >= 100){
+			enemy.translateOnAxis(enemy.worldToLocal(
+				new THREE.Vector3(camera.position.x,camera.position.y,camera.position.z)
+			).normalize(),0.09);
+		}
 	}
 
 	document.body.onload = setup;

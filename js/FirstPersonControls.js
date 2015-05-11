@@ -21,7 +21,7 @@ THREE.FirstPersonControls = function ( object, domElement ) {
 
 	this.activeLook = true;
 
-	this.heightSpeed = false;
+	this.heightSpeed = true;
 	this.heightCoef = 1.0;
 	this.heightMin = 0.0;
 	this.heightMax = 1.0;
@@ -89,8 +89,8 @@ THREE.FirstPersonControls = function ( object, domElement ) {
 
 			switch ( event.button ) {
 
-				case 0: this.moveForward = true; break;
-				case 2: this.moveBackward = true; break;
+			//	case 0: this.moveForward = true; break;
+			//	case 2: this.moveBackward = true; break;
 
 			}
 
@@ -185,7 +185,7 @@ THREE.FirstPersonControls = function ( object, domElement ) {
 	};
 
 	this.update = function( delta ) {
-
+		var y = this.object.position.y;
 		if ( this.enabled === false ) return;
 
 		if ( this.heightSpeed ) {
@@ -250,6 +250,7 @@ THREE.FirstPersonControls = function ( object, domElement ) {
 		targetPosition.z = position.z + 100 * Math.sin( this.phi ) * Math.sin( this.theta );
 
 		this.object.lookAt( targetPosition );
+		this.object.position.y = y;
 
 	};
 
