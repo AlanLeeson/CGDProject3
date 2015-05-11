@@ -140,46 +140,55 @@
 	function findDistance(){
 		var ptX = enemy.position.x;
 		var ptY = enemy.position.y;
+		var ptZ = enemy.position.z;
 		//console.log(rope.anchor1.location[0]);
 		var p1X = camera.position.x;
 		var p2X = box.position.x;
 		var p1Y = camera.position.y;
 		var p2Y = box.position.y;
+		var p1Z = camera.position.z;
+		var p2Z = box.position.z;
 		
 		var dx = p2X - p1X;
 		var dy = p2Y - p1Y;
+		var dz = p2Z - p1Z;
 		
 		//if it's a point rather than a segment
-		if((dx == 0) && (dy == 0)){
-			var closest = {x: p1X, y: p1Y};
+		if((dx == 0) && (dy == 0) && (dz == 0)){
+			var closest = {x: p1X, y: p1Y, z: p1Z};
 			dx = ptX - p1X;
 			dy = ptY - p1Y;
-			return Math.sqrt(dx * dx + dy * dy);
+			dz = ptZ - p1Z;
+			return Math.sqrt(dx * dx + dy * dy + dz * dz);
 		}
 		
 		//calculate the t that minimizes the distance
-		var t = ((ptX - p1X) * dx + (ptY - p1Y) * dy) / (dx * dx + dy * dy);
+		var t = ((ptX - p1X) * dx + (ptY - p1Y) * dy + (ptZ - p1Z) * dz) / (dx * dx + dy * dy + dz * dz);
 		
 		//see if this represents one of the segment's end points or a point in the middle.
 		if(t < 0){
-			var closest = {x: p1X, y: p1Y};
+			var closest = {x: p1X, y: p1Y, z: p1Z};
 			dx = ptX - p1X;
 			dy = ptY - p1Y;
+			dz = ptZ - p1Z;
 		} else if(t > 1){
-			var closest = {x: p2X, y: p2Y};
+			var closest = {x: p2X, y: p2Y, z: p2Z};
 			dx = ptX - p2X;
 			dy = ptY - p2Y;
+			dz = ptZ - p2Z;
 		} else {
-			var closest = {x: p1X + t * dx, y: p1Y + t * dy};
+			var closest = {x: p1X + t * dx, y: p1Y + t * dy, z: p1Z + t * dz};
 			dx = ptX - closest.x;
 			dy = ptY - closest.y;
+			dz = ptZ - closest.z;
 		}
 		
-		var leastDistance = Math.sqrt(dx * dx + dy * dy);
+		var leastDistance = Math.sqrt(dx * dx + dy * dy + dz * dz);
 		//return Math.sqrt(dx * dx + dy * dy);
 		
 		if(leastDistance < ENEMY.radius){
 			stareLength ++;
+			console.log("HIT");
 		}else{
 			stareLength = 0;
 		}
