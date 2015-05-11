@@ -6,6 +6,9 @@
 	var box, enemy;
 	var dirLight, flashlight;
 	var stareLength;
+	var rayHandler;
+	var collidableMeshes = [];
+	var collider;
 	
 	var MATERIAL = Object.seal({
 		boxMaterial: undefined,
@@ -40,6 +43,8 @@
 		createMaterials();
 		createModels();
 		
+		//raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3(0,-1,0),0,10);
+		
 		document.onmousedown = doMousedown;
 	
 		// get started!
@@ -65,6 +70,7 @@
 			object.position.x = Math.random() * 12 - 6;
 			object.position.z = Math.random() * 12 - 6;
 			object.scale.y = Math.random()*1+1;
+			collidableMeshes.push(object);
 			scene.add(object);
 			object.receiveShadow = true;
 			object.castShadow = true;
@@ -72,6 +78,9 @@
 		
 		box = new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 		scene.add(box);
+		
+		collider = new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
+		scene.add(collider);
 		
 		//building
         var roomGeometry = new THREE.BoxGeometry(13, 5, 13);
@@ -102,12 +111,31 @@
 	function update(){
 		requestAnimationFrame(update);
 		
+		var originPoint = collider.position.clone();
+		
+		for (var vertexIndex = 0; vertexIndex < collider.geometry.vertices.length; vertexIndex++)
+		{		
+			var localVertex = collider.geometry.vertices[vertexIndex].clone();
+			var globalVertex = localVertex.applyMatrix4( collider.matrix );
+			var directionVector = globalVertex.sub( collider.position );
+			
+			var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
+			var collisionResults = ray.intersectObjects( collidableMeshes );
+			if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() ){ 
+				console.log(" Hit ");
+				collisionResults[0].object.material.transparent = true;
+				collisionResults[0].object.material.opacity = 0.3;
+			}
+		}	
+		
+		
 		var delta = clock.getDelta();
 		cameraControls.update(delta);
 		box.position.set(cameraControls.target.x,cameraControls.target.y,cameraControls.target.z);
 		flashlight.position.set(camera.position.x,camera.position.y-0.25,camera.position.z);
 		flashlight.target = box;
 		enemy.lookAt(camera.position);
+		collider.position.set(camera.position.x, camera.position.y, camera.position.z);
 		
 		findDistance();
 		
