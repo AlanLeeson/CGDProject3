@@ -79,7 +79,7 @@
 		box = new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 		scene.add(box);
 		
-		collider = new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
+		collider = new THREE.Mesh(new THREE.BoxGeometry(1,1,1) );
 		scene.add(collider);
 		
 		//building
@@ -90,8 +90,7 @@
 		room.receiveShadow = true;
 		scene.add(room);
 		
-		enemy = setUpEnemy();
-		scene.add(enemy);
+		load("models/monster.dae","enemy");
 	}
 	
 	function createLighting(){
@@ -110,7 +109,26 @@
 	
 	function update(){
 		requestAnimationFrame(update);
+
+		if(enemy != undefined){
+			checkBoxCollision();
+			var delta = clock.getDelta();
+			cameraControls.update(delta);
+			box.position.set(cameraControls.target.x,cameraControls.target.y,cameraControls.target.z);
+			flashlight.position.set(camera.position.x,camera.position.y-0.25,camera.position.z);
+			flashlight.target = box;
+			enemy.lookAt(camera.position);
+			collider.position.set(camera.position.x,camera.position.y-0.25,camera.position.z);
 		
+			findDistance();
+		}else{
+			enemy = scene.getObjectByName( "enemy" );
+		}
+		
+		renderer.render(scene,camera);
+	}
+	
+	function checkBoxCollision(){
 		var originPoint = collider.position.clone();
 		
 		for (var vertexIndex = 0; vertexIndex < collider.geometry.vertices.length; vertexIndex++)
@@ -121,25 +139,13 @@
 			
 			var ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize() );
 			var collisionResults = ray.intersectObjects( collidableMeshes );
+			
 			if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() ){ 
 				console.log(" Hit ");
 				collisionResults[0].object.material.transparent = true;
 				collisionResults[0].object.material.opacity = 0.3;
 			}
 		}	
-		
-		
-		var delta = clock.getDelta();
-		cameraControls.update(delta);
-		box.position.set(cameraControls.target.x,cameraControls.target.y,cameraControls.target.z);
-		flashlight.position.set(camera.position.x,camera.position.y-0.25,camera.position.z);
-		flashlight.target = box;
-		enemy.lookAt(camera.position);
-		collider.position.set(camera.position.x, camera.position.y, camera.position.z);
-		
-		findDistance();
-		
-		renderer.render(scene,camera);
 	}
 	
 	function doMousedown(event) {
@@ -222,9 +228,30 @@
 		}
 		if(stareLength >= 100){
 			enemy.translateOnAxis(enemy.worldToLocal(
-				new THREE.Vector3(camera.position.x,camera.position.y,camera.position.z)
+				new THREE.Vector3(camera.position.x,camera.position.y-0.25,camera.position.z)
 			).normalize(),0.09);
 		}
+	}
+	
+	function load(file,name){
+		var dae;
+		var loader = new THREE.ColladaLoader();
+		loader.options.convertUpAxis = true;
+		loader.load( file, function ( collada ) {
+			dae = collada.scene;
+			dae.traverse( function ( child ) {
+				if( child instanceof THREE.SkinnedMesh ) {
+					var animation = new THREE.Animation( child, child.geometry.animation );
+					animation.play();
+				}
+			});
+			dae.scale.x = dae.scale.y = dae.scale.z = 0.0005;
+			dae.position.x = Math.random() * 12 - 6;
+			dae.position.z = Math.random() * 12 - 6;
+			dae.updateMatrix();
+			dae.name = name;
+			scene.add(dae)
+		});
 	}
 
 	document.body.onload = setup;
