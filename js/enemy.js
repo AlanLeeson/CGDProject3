@@ -34,5 +34,23 @@ function setUpCollectable(position){
 	var object = new THREE.Mesh(dodecaGeometry, new THREE.MeshLambertMaterial({color: Math.random() * 0xffffff }));
 	object.position.set(position.x,position.y,position.z);
 	object.material.wireframe = true;
+	object.name = "collectable";
 	return object;
+}
+
+function createText(string, x, y, w, h, id){
+	var text2 = document.createElement('div');
+	text2.style.position = 'absolute';
+	//text2.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
+	text2.style.width = w;
+	text2.style.height = h;
+	text2.style.color = "blue";
+	text2.style.fontSize = "40px";
+	text2.style.fontStyle = "oblique","serif";
+	text2.style.fontFamily = "Monoscope";
+	text2.id = id;
+	text2.innerHTML = string + "";
+	text2.style.top = y + 'px';
+	text2.style.left = x + 'px';
+	document.body.appendChild(text2);
 }

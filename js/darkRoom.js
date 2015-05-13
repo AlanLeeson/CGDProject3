@@ -9,7 +9,7 @@
 	var rayHandler;
 	var collidableMeshes = [];
 	var collider;
-	var collectables = [];
+	var collectableCount = 5;
 	
 	var MATERIAL = Object.seal({
 		boxMaterial: undefined,
@@ -23,7 +23,8 @@
 		
 		THREE.ImageUtils.crossOrigin = '';
 		stareLength = 0;
-		
+		createText("Find the hidden orbs", 10, 10, 150,10,"collectableText");
+		createText(collectableCount, window.innerWidth/2, 10, 150,10,"count");
 		// create a WebGL renderer
 		renderer = new THREE.WebGLRenderer();
 		renderer.setSize(window.innerWidth, window.innerHeight);
@@ -87,8 +88,8 @@
 			if(i < 5){
 				//create the collectables
 				var obj = setUpCollectable(object.position);
-				collectables.push(obj)
 				scene.add(obj);
+				collidableMeshes.push(obj);
 			}
 		}
 		
@@ -149,6 +150,12 @@
 			var collisionResults = ray.intersectObjects( collidableMeshes );
 			
 			if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() ){ 
+				if(collisionResults[0].object.name == "collectable"){
+					collectableCount --;
+					scene.remove(collisionResults[0].object);
+					collidableMeshes.splice(collidableMeshes.indexOf(collisionResults[0].object),1);
+					document.getElementById("count").innerHTML = collectableCount + "";
+				}
 				collisionResults[0].object.material.transparent = true;
 				collisionResults[0].object.material.opacity = 0.3;
 			}
