@@ -22,3 +22,17 @@ function attack(obj){
 	
 }
 
+var COLLECTABLE = Object.freeze({
+	width: 0.5,
+	height: 0.5,
+	depth: 0.5,
+	radius: 0.25
+});
+
+function setUpCollectable(position){
+	var dodecaGeometry = new THREE.DodecahedronGeometry(COLLECTABLE.radius);
+	var object = new THREE.Mesh(dodecaGeometry, new THREE.MeshLambertMaterial({color: Math.random() * 0xffffff }));
+	object.position.set(position.x,position.y,position.z);
+	object.material.wireframe = true;
+	return object;
+}

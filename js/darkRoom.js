@@ -9,6 +9,7 @@
 	var rayHandler;
 	var collidableMeshes = [];
 	var collider;
+	var collectables = [];
 	
 	var MATERIAL = Object.seal({
 		boxMaterial: undefined,
@@ -31,7 +32,7 @@
 		scene = new THREE.Scene();
 		
 		camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
-		camera.position.y = 0.5;
+		camera.position.y = 0.25;
 		
 		cameraControls = new THREE.FirstPersonControls(camera);
         cameraControls.lookSpeed = 0.2;
@@ -63,17 +64,32 @@
 	}
 	
 	function createModels(){	
+	
+		//building
+        var roomGeometry = new THREE.BoxGeometry(20, 5, 20);
+        var roomMaterial = new THREE.MeshLambertMaterial({color: "grey", side: THREE.BackSide});
+        var room = new THREE.Mesh(roomGeometry, roomMaterial);
+		room.position.set(0,2,0);
+		room.receiveShadow = true;
+		scene.add(room);
+	
 		var boxGeometry = new THREE.BoxGeometry(1,1,1);
-		for(var i = 0; i < 20; i++){
+		for(var i = 0; i < 40; i++){
 			//var object = new THREE.Mesh(boxGeometry,new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 			var object = new THREE.Mesh(boxGeometry, new THREE.MeshLambertMaterial({color: "rgb(51,25,0)"}));
-			object.position.x = Math.random() * 12 - 6;
-			object.position.z = Math.random() * 12 - 6;
+			object.position.x = Math.random() * 20 - 10;
+			object.position.z = Math.random() * 20 - 10;
 			object.scale.y = Math.random()*1+1;
 			collidableMeshes.push(object);
 			scene.add(object);
 			object.receiveShadow = true;
 			object.castShadow = true;
+			if(i < 5){
+				//create the collectables
+				var obj = setUpCollectable(object.position);
+				collectables.push(obj)
+				scene.add(obj);
+			}
 		}
 		
 		box = new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
@@ -81,14 +97,6 @@
 		
 		collider = new THREE.Mesh(new THREE.BoxGeometry(1,1,1) );
 		scene.add(collider);
-		
-		//building
-        var roomGeometry = new THREE.BoxGeometry(13, 5, 13);
-        var roomMaterial = new THREE.MeshLambertMaterial({color: "grey", side: THREE.BackSide});
-        var room = new THREE.Mesh(roomGeometry, roomMaterial);
-		room.position.set(0,2,0);
-		room.receiveShadow = true;
-		scene.add(room);
 		
 		load("models/monster.dae","enemy");
 	}
@@ -102,7 +110,7 @@
 		flashlight = new THREE.SpotLight(0xffffff,4,10);
 		flashlight.castShadow = true;
 		scene.add(flashlight);
-		flashlight.position.set(camera.position.x,camera.position.y-0.25,camera.position.z);
+		flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 		renderer.shadowMapEnabled = true;
 		renderer.shadowMapType = THREE.PCFSoftShadowMap;
 	}
@@ -115,11 +123,11 @@
 			var delta = clock.getDelta();
 			cameraControls.update(delta);
 			box.position.set(cameraControls.target.x,cameraControls.target.y,cameraControls.target.z);
-			flashlight.position.set(camera.position.x,camera.position.y-0.25,camera.position.z);
+			flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 			flashlight.target = box;
 			enemy.lookAt(camera.position);
-			collider.position.set(camera.position.x,camera.position.y-0.25,camera.position.z);
-		
+			collider.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
+			
 			findDistance();
 		}else{
 			enemy = scene.getObjectByName( "enemy" );
@@ -141,7 +149,6 @@
 			var collisionResults = ray.intersectObjects( collidableMeshes );
 			
 			if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() ){ 
-				console.log(" Hit ");
 				collisionResults[0].object.material.transparent = true;
 				collisionResults[0].object.material.opacity = 0.3;
 			}
@@ -222,13 +229,12 @@
 		
 		if(leastDistance < ENEMY.radius){
 			stareLength ++;
-			console.log("HIT");
 		}else{
 			stareLength = 0;
 		}
 		if(stareLength >= 100){
 			enemy.translateOnAxis(enemy.worldToLocal(
-				new THREE.Vector3(camera.position.x,camera.position.y-0.25,camera.position.z)
+				new THREE.Vector3(camera.position.x,camera.position.y-0.1,camera.position.z)
 			).normalize(),0.09);
 		}
 	}
