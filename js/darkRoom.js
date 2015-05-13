@@ -3,13 +3,15 @@
 (function(){
 
 	var scene, camera, renderer, cameraControls, clock;
-	var box, enemy;
+	var box, enemy, floor;
 	var dirLight, flashlight;
 	var stareLength;
 	var rayHandler;
 	var collidableMeshes = [];
 	var collider;
 	var collectableCount = 5;
+	var prevPosX, prevPosY, prevPosZ;
+	var hold; //for mouse holding
 	
 	var MATERIAL = Object.seal({
 		boxMaterial: undefined,
@@ -39,6 +41,8 @@
         cameraControls.lookSpeed = 0.2;
         cameraControls.movementSpeed = 1;
         cameraControls.lookVertical = true;
+		
+		hold = false;
         
 
 		createLighting();
@@ -48,6 +52,7 @@
 		//raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3(0,-1,0),0,10);
 		
 		document.onmousedown = doMousedown;
+		document.onmouseup = function(){hold = false; console.log("UP");}; //mouse is no longer held
 	
 		// get started!
 		update();
@@ -85,6 +90,8 @@
 			scene.add(object);
 			object.receiveShadow = true;
 			object.castShadow = true;
+			object.radius = object.scale.x/2;
+			console.log(object.radius);
 			if(i < 5){
 				//create the collectables
 				var obj = setUpCollectable(object.position);
@@ -99,6 +106,12 @@
 		collider = new THREE.Mesh(new THREE.BoxGeometry(1,1,1) );
 		scene.add(collider);
 		
+		//floor = new THREE.Mesh(new THREE.PlaneGeometry(9,9,1,1), new THREE.MeshLambertMaterial({color: "dark grey"}));
+		//floor.position.set(0,-0.5,0);
+		//floor.receiveShadow = true;
+		//floor.rotation.x = -0.5 * Math.PI;
+		//scene.add(floor);
+		
 		load("models/monster.dae","enemy");
 	}
 	
@@ -108,7 +121,7 @@
 		//ambient.color.setHSL( 0.05, 0.05, 0.05 );
 		scene.add(ambient);
 	
-		flashlight = new THREE.SpotLight(0xffffff,4,10);
+		flashlight = new THREE.SpotLight(0xffffff,3,10);
 		flashlight.castShadow = true;
 		scene.add(flashlight);
 		flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
@@ -120,9 +133,9 @@
 		requestAnimationFrame(update);
 
 		if(enemy != undefined){
-			checkBoxCollision();
 			var delta = clock.getDelta();
 			cameraControls.update(delta);
+			checkBoxCollision();
 			box.position.set(cameraControls.target.x,cameraControls.target.y,cameraControls.target.z);
 			flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 			flashlight.target = box;
@@ -130,9 +143,25 @@
 			collider.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 			
 			findDistance();
+			
+			for(var i = 0; i < collidableMeshes.length; i++){
+				if(hold){
+					boxInView(collidableMeshes[i]);
+				} else {
+					collidableMeshes[i].material.opacity = 1;
+				}
+			}
+			
+			
+			
+			//prevPosX = cameraControls.object.position.x;
+			//prevPosY = cameraControls.object.position.y;
+			//prevPosZ = cameraControls.object.position.z;
 		}else{
 			enemy = scene.getObjectByName( "enemy" );
 		}
+		
+		
 		
 		renderer.render(scene,camera);
 	}
@@ -156,8 +185,11 @@
 					collidableMeshes.splice(collidableMeshes.indexOf(collisionResults[0].object),1);
 					document.getElementById("count").innerHTML = collectableCount + "";
 				}
-				collisionResults[0].object.material.transparent = true;
-				collisionResults[0].object.material.opacity = 0.3;
+				//make box transparent upon contact with camera
+				//collisionResults[0].object.material.transparent = true;
+				//collisionResults[0].object.material.opacity = 0.3;
+				
+				//cameraControls.object.position.set(prevPosX, prevPosY, prevPosZ);
 			}
 		}	
 	}
@@ -182,6 +214,9 @@
 			enemyClick[0].object.position.set(Math.random() * 12 - 6,0,Math.random() * 12 - 6);
 			stareLength = 0;
 		}
+		
+		//mouse is being held
+		hold = true;
 	}
 	
 	//calculate shortest distance between centerpoint and rope line for collision
@@ -246,6 +281,65 @@
 		}
 	}
 	
+	//calculate shortest distance between centerpoint and rope line for collision
+	function boxInView(theBox){
+		var ptX = theBox.position.x;
+		var ptY = theBox.position.y;
+		var ptZ = theBox.position.z;
+		//console.log(rope.anchor1.location[0]);
+		var p1X = camera.position.x;
+		var p2X = box.position.x;
+		var p1Y = camera.position.y;
+		var p2Y = box.position.y;
+		var p1Z = camera.position.z;
+		var p2Z = box.position.z;
+		
+		var dx = p2X - p1X;
+		var dy = p2Y - p1Y;
+		var dz = p2Z - p1Z;
+		
+		//if it's a point rather than a segment
+		if((dx == 0) && (dy == 0) && (dz == 0)){
+			var closest = {x: p1X, y: p1Y, z: p1Z};
+			dx = ptX - p1X;
+			dy = ptY - p1Y;
+			dz = ptZ - p1Z;
+			return Math.sqrt(dx * dx + dy * dy + dz * dz);
+		}
+		
+		//calculate the t that minimizes the distance
+		var t = ((ptX - p1X) * dx + (ptY - p1Y) * dy + (ptZ - p1Z) * dz) / (dx * dx + dy * dy + dz * dz);
+		
+		//see if this represents one of the segment's end points or a point in the middle.
+		if(t < 0){
+			var closest = {x: p1X, y: p1Y, z: p1Z};
+			dx = ptX - p1X;
+			dy = ptY - p1Y;
+			dz = ptZ - p1Z;
+		} else if(t > 1){
+			var closest = {x: p2X, y: p2Y, z: p2Z};
+			dx = ptX - p2X;
+			dy = ptY - p2Y;
+			dz = ptZ - p2Z;
+		} else {
+			var closest = {x: p1X + t * dx, y: p1Y + t * dy, z: p1Z + t * dz};
+			dx = ptX - closest.x;
+			dy = ptY - closest.y;
+			dz = ptZ - closest.z;
+		}
+		
+		var leastDistance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+		//return Math.sqrt(dx * dx + dy * dy);
+		
+		if(leastDistance < theBox.radius){
+			console.log("HIT");
+			theBox.material.transparent = true;
+			theBox.material.opacity = 0.3;
+		} else {
+			theBox.material.opacity = 1;
+		}
+	}
+	
 	function load(file,name){
 		var dae;
 		var loader = new THREE.ColladaLoader();
@@ -258,9 +352,10 @@
 					animation.play();
 				}
 			});
-			dae.scale.x = dae.scale.y = dae.scale.z = 0.0005;
+			dae.scale.x = dae.scale.y = dae.scale.z = 0.15;
 			dae.position.x = Math.random() * 12 - 6;
 			dae.position.z = Math.random() * 12 - 6;
+			dae.position.y = -0.5;
 			dae.updateMatrix();
 			dae.name = name;
 			scene.add(dae)
