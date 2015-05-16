@@ -72,14 +72,14 @@
 	function createModels(){	
 	
 		//building
-        var roomGeometry = new THREE.BoxGeometry(20, 5, 20);
+        var roomGeometry = new THREE.BoxGeometry(20, 5, 20,90,90,90);
         var roomMaterial = new THREE.MeshLambertMaterial({color: "grey", side: THREE.BackSide});
         var room = new THREE.Mesh(roomGeometry, roomMaterial);
 		room.position.set(0,2,0);
 		room.receiveShadow = true;
 		scene.add(room);
 	
-		var boxGeometry = new THREE.BoxGeometry(1,1,1);
+		var boxGeometry = new THREE.BoxGeometry(1,1,1,10,10,10);
 		for(var i = 0; i < 40; i++){
 			//var object = new THREE.Mesh(boxGeometry,new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 			var object = new THREE.Mesh(boxGeometry, new THREE.MeshLambertMaterial({color: "rgb(51,25,0)"}));
