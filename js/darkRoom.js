@@ -8,6 +8,7 @@
 	var stareLength;
 	var rayHandler;
 	var collidableMeshes = [];
+	var transMeshes = [];
 	var collider;
 	var collectableCount = 5;
 	var prevPosX, prevPosY, prevPosZ;
@@ -88,7 +89,10 @@
 			object.position.x = Math.random() * 20 - 10;
 			object.position.z = Math.random() * 20 - 10;
 			object.scale.y = Math.random()*1+1;
-			collidableMeshes.push(object);
+			if(!(i<5)){
+				collidableMeshes.push(object);
+			}
+			transMeshes.push(object);
 			scene.add(object);
 			object.receiveShadow = true;
 			object.castShadow = true;
@@ -125,6 +129,8 @@
 	
 		flashlight = new THREE.SpotLight(0xffffff,3,10);
 		flashlight.castShadow = true;
+		flashlight.intensity = 0.9;
+		flashlight.distance = 6;
 		scene.add(flashlight);
 		flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 		renderer.shadowMapEnabled = true;
@@ -151,11 +157,12 @@
 			
 			findDistance();
 			
-			for(var i = 0; i < collidableMeshes.length; i++){
+			//for(var i = 0; i < collidableMeshes.length; i++){
+			for(var i = 0; i < transMeshes.length; i++){
 				if(hold){
-					boxInView(collidableMeshes[i]);
+					boxInView(transMeshes[i]);
 				} else {
-					collidableMeshes[i].material.opacity = 1;
+					transMeshes[i].material.opacity = 1;
 				}
 			}
 			
