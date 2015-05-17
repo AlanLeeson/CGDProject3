@@ -12,7 +12,7 @@
 	var collectableCount = 5;
 	var prevPosX, prevPosY, prevPosZ;
 	var hold; //for mouse holding
-	var fVec;
+	var fVec, theMat, theMesh;
 	
 	var MATERIAL = Object.seal({
 		boxMaterial: undefined,
@@ -73,7 +73,8 @@
 	function createModels(){	
 	
 		//building
-        var roomGeometry = new THREE.BoxGeometry(20, 5, 20,90,90,90);
+        //var roomGeometry = new THREE.BoxGeometry(20, 5, 20,90,90,90);
+		var roomGeometry = new THREE.BoxGeometry(20, 5, 20,30,30,30);
         var roomMaterial = new THREE.MeshLambertMaterial({color: "grey", side: THREE.BackSide});
         var room = new THREE.Mesh(roomGeometry, roomMaterial);
 		room.position.set(0,2,0);
@@ -199,6 +200,7 @@
 				//collider.position.set(prevPosX, prevPosY, prevPosZ);
 				
 				camera.translateZ( fVec.z * 0.1 );
+				camera.position.y = 0.25;
 				console.log(fVec.z);
 				collider.position.set(camera.position.x, camera.position.y-0.1, camera.position.z);
 				flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
@@ -361,20 +363,40 @@
 		var loader = new THREE.ColladaLoader();
 		loader.options.convertUpAxis = true;
 		loader.load( file, function ( collada ) {
+			//dae = collada.scene;
+			//dae.traverse( function ( child ) {
+				//if( child instanceof THREE.SkinnedMesh ) {
+					//var animation = new THREE.Animation( child, child.geometry.animation );
+					//animation.play();
+				//}
+			//});
+			//dae.scale.x = dae.scale.y = dae.scale.z = 0.15;
+			//dae.position.x = Math.random() * 12 - 6;
+			//dae.position.z = Math.random() * 12 - 6;
+			//dae.position.y = -0.5;
+			//dae.updateMatrix();
+			//dae.name = name;
+			//scene.add(dae)
 			dae = collada.scene;
-			dae.traverse( function ( child ) {
-				if( child instanceof THREE.SkinnedMesh ) {
-					var animation = new THREE.Animation( child, child.geometry.animation );
-					animation.play();
-				}
+			dae.traverse( function(child){
+				theMat = new THREE.MeshLambertMaterial({color: "black"});
+				theMesh = new THREE.Mesh(
+					child.geometry,
+					theMat
+				);
+				
+				
+			
 			});
-			dae.scale.x = dae.scale.y = dae.scale.z = 0.15;
-			dae.position.x = Math.random() * 12 - 6;
-			dae.position.z = Math.random() * 12 - 6;
-			dae.position.y = -0.5;
-			dae.updateMatrix();
-			dae.name = name;
-			scene.add(dae)
+			
+			theMesh.scale.x = theMesh.scale.y = theMesh.scale.z = 0.15;
+			theMesh.position.x = Math.random() * 12 - 6;
+			theMesh.position.z = Math.random() * 12 - 6;
+			theMesh.position.y = 0.5;
+			theMesh.updateMatrix();
+			theMesh.name = name;
+			scene.add(theMesh);
+			
 		});
 	}
 
