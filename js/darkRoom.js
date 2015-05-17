@@ -12,6 +12,7 @@
 	var collectableCount = 5;
 	var prevPosX, prevPosY, prevPosZ;
 	var hold; //for mouse holding
+	var fVec;
 	
 	var MATERIAL = Object.seal({
 		boxMaterial: undefined,
@@ -20,7 +21,7 @@
 	});
 	
 	function setup(){
-	
+		fVec = new THREE.Vector3(0,0,-1);
 		clock = new THREE.Clock();
 		
 		THREE.ImageUtils.crossOrigin = '';
@@ -131,16 +132,21 @@
 	
 	function update(){
 		requestAnimationFrame(update);
+		prevPosX = cameraControls.object.position.x;
+		prevPosY = cameraControls.object.position.y;
+		prevPosZ = cameraControls.object.position.z;
+		fVec.applyQuaternion(camera.quaternion);
 
 		if(enemy != undefined){
 			var delta = clock.getDelta();
 			cameraControls.update(delta);
+			collider.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 			checkBoxCollision();
 			box.position.set(cameraControls.target.x,cameraControls.target.y,cameraControls.target.z);
 			flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 			flashlight.target = box;
 			enemy.lookAt(camera.position);
-			collider.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
+			//collider.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 			
 			findDistance();
 			
@@ -190,6 +196,16 @@
 				//collisionResults[0].object.material.opacity = 0.3;
 				
 				//cameraControls.object.position.set(prevPosX, prevPosY, prevPosZ);
+				//collider.position.set(prevPosX, prevPosY, prevPosZ);
+				
+				camera.translateZ( fVec.z * 0.1 );
+				console.log(fVec.z);
+				collider.position.set(camera.position.x, camera.position.y-0.1, camera.position.z);
+				flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
+				flashlight.target = box;
+			} else {
+				//var delta = clock.getDelta();
+				//cameraControls.update(0.001);
 			}
 		}	
 	}
