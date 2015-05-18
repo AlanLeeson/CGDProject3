@@ -14,6 +14,7 @@
 	var prevPosX, prevPosY, prevPosZ;
 	var hold; //for mouse holding
 	var fVec, theMat, theMesh;
+	var breathing;
 	
 	var MATERIAL = Object.seal({
 		boxMaterial: undefined,
@@ -35,6 +36,11 @@
 		document.body.appendChild(renderer.domElement);
 
 		scene = new THREE.Scene();
+		
+		breathing = new Audio('sound/breathing.wav');
+		breathing.volume = 0.05;
+		breathing.loop = true;
+		breathing.play();
 		
 		camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
 		camera.position.y = 0.25;
