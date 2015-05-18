@@ -15,6 +15,7 @@
 	var hold; //for mouse holding
 	var fVec, theMat, theMesh;
 	var breathing;
+	var antsy = 300;
 	
 	var MATERIAL = Object.seal({
 		boxMaterial: undefined,
@@ -153,6 +154,7 @@
 		if(enemy != undefined){
 			var delta = clock.getDelta();
 			cameraControls.update(delta);
+			moveEnemy();
 			collider.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 			checkBoxCollision();
 			
@@ -181,6 +183,42 @@
 		
 		
 		renderer.render(scene,camera);
+	}
+	
+	function moveEnemy(){
+		antsy --;
+		if(antsy <= 0){
+			var ran = parseInt(Math.random()*2);
+			if(ran == 0){
+				var moveToPosition = new THREE.Vector3(cameraControls.target.x,
+					cameraControls.target.y, cameraControls.target.z);
+				moveToPosition.negate();
+				moveToPosition.normalize();
+				moveToPosition.multiplyScalar(Math.random()*collectableCount + 2);
+				enemy.position.set(camera.position.x+moveToPosition.x, 
+					enemy.position.y,camera.position.z+moveToPosition.z);
+			}else if(ran == 1){
+				enemy.position.set(Math.random() * 20 - 10,enemy.position.y,Math.random() * 20 - 10);
+			}
+			switch(collectableCount){
+				case 5:
+					antsy = 2000;
+				break;
+				case 4:
+					antsy = 1000;
+				break;
+				case 3:
+					antsy = 700;
+				break;
+				case 2:
+					antsy = 450;
+				break;
+				case 1: 
+					antsy = 300;
+				break;
+			}
+		
+		}
 	}
 	
 	function checkBoxCollision(){
