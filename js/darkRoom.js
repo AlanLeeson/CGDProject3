@@ -57,7 +57,7 @@
 		violin1.volume = 0.7;
 		
 		hit1 = new Audio('sound/hit1.wav');
-		hit1.volume = 1;
+		hit1.volume = 0.7;
 		
 		hit2 = new Audio('sound/hit2.mp3');
 		hit2.volume = 1;
@@ -192,6 +192,28 @@
 			//collider.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 			findEnd();
 			findDistance();
+			
+			if(camera.position.x > 12){
+				camera.position.x = 12;
+				collider.position.set(camera.position.x, camera.position.y-0.1, camera.position.z);
+				flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
+				flashlight.target = box;
+			} else if(camera.position.x < -12){
+				camera.position.x = -12;
+				collider.position.set(camera.position.x, camera.position.y-0.1, camera.position.z);
+				flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
+				flashlight.target = box;
+			} else if(camera.position.z > 12){
+				camera.position.z = 12;
+				collider.position.set(camera.position.x, camera.position.y-0.1, camera.position.z);
+				flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
+				flashlight.target = box;
+			} else if(camera.position.z < -12){
+				camera.position.z = -12;
+				collider.position.set(camera.position.x, camera.position.y-0.1, camera.position.z);
+				flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
+				flashlight.target = box;
+			}
 			
 			if((Math.floor(Math.random() * 60)) == 3){
 				playHit();
