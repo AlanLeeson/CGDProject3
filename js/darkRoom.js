@@ -15,7 +15,7 @@
 	var hold; //for mouse holding
 	var fVec, theMat, theMesh;
 	var breathing, footsteps, collect, violin1, hit1, hit2, bang, creep;
-	var antsy = 300;
+	var antsy = 300, attackSpeed = 150;
 	
 	var MATERIAL = Object.seal({
 		boxMaterial: undefined,
@@ -53,7 +53,7 @@
 		
 		violin1 = new Audio('sound/scareViolins1.ogg');
 		violin1.loop = true;
-		violin1.volume = 1;
+		violin1.volume = 0.7;
 		
 		hit1 = new Audio('sound/hit1.wav');
 		hit1.volume = 1;
@@ -85,7 +85,7 @@
 		//raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3(0,-1,0),0,10);
 		
 		document.onmousedown = doMousedown;
-		document.onmouseup = function(){hold = false; console.log("UP");}; //mouse is no longer held
+		document.onmouseup = function(){hold = false;}; //mouse is no longer held
 		document.onkeydown = function(){footsteps.play();};
 		document.onkeyup = function(){footsteps.pause();};
 	
@@ -133,7 +133,6 @@
 			object.receiveShadow = true;
 			object.castShadow = true;
 			object.radius = object.scale.x/2;
-			console.log(object.radius);
 			if(i < 5){
 				//create the collectables
 				var obj = setUpCollectable(object.position);
@@ -147,12 +146,6 @@
 		
 		collider = new THREE.Mesh(new THREE.BoxGeometry(1,1,1) );
 		scene.add(collider);
-		
-		//floor = new THREE.Mesh(new THREE.PlaneGeometry(9,9,1,1), new THREE.MeshLambertMaterial({color: "dark grey"}));
-		//floor.position.set(0,-0.5,0);
-		//floor.receiveShadow = true;
-		//floor.rotation.x = -0.5 * Math.PI;
-		//scene.add(floor);
 		
 		load("models/monster.dae","enemy");
 	}
@@ -189,7 +182,7 @@
 			
 			var boxPos = new THREE.Vector3(cameraControls.target.x,cameraControls.target.y,cameraControls.target.z);
 			boxPos.normalize();
-			boxPos.multiplyScalar(2);
+			boxPos.multiplyScalar(4);
 			box.position.set(camera.position.x+boxPos.x,camera.position.y+boxPos.y-0.1,camera.position.z+boxPos.z);
 			flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 			flashlight.target = box;
@@ -220,17 +213,6 @@
 				}
 			}
 			
-			
-			
-			
-			
-			
-			//for testing purposes
-			enemy.position.set(0,0,0.1);
-			
-			
-			
-			
 		}else{
 			enemy = scene.getObjectByName( "enemy" );
 		}
@@ -243,7 +225,7 @@
 	function moveEnemy(){
 		antsy --;
 		if(antsy <= 0){
-			var ran = parseInt(Math.random()*2);
+			var ran = parseInt(Math.random()*3);
 			if(ran == 0){
 				var moveToPosition = new THREE.Vector3(cameraControls.target.x,
 					cameraControls.target.y, cameraControls.target.z);
@@ -254,22 +236,29 @@
 					enemy.position.y,camera.position.z+moveToPosition.z);
 			}else if(ran == 1){
 				enemy.position.set(Math.random() * 20 - 10,enemy.position.y,Math.random() * 20 - 10);
+			}else if(ran == 2){
+				enemy.position.set(Math.random()*12 - 6 + camera.position.x, enemy.position.y, 
+					Math.random()*12 - 6 + camera.position.z)
 			}
 			switch(collectableCount){
 				case 5:
-					antsy = 2000;
+					antsy = 1500;
 				break;
 				case 4:
 					antsy = 1000;
+					attackSpeed = 120;
 				break;
 				case 3:
 					antsy = 700;
+					attackSpeed = 100;
 				break;
 				case 2:
 					antsy = 450;
+					attackSpeed = 70;
 				break;
 				case 1: 
 					antsy = 300;
+					attackSpeed = 50;
 				break;
 			}
 		
@@ -309,7 +298,6 @@
 				
 				camera.translateZ( fVec.z * 0.1 );
 				camera.position.y = 0.25;
-				console.log(fVec.z);
 				collider.position.set(camera.position.x, camera.position.y-0.1, camera.position.z);
 				flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 				flashlight.target = box;
@@ -400,11 +388,12 @@
 			stareLength ++;
 			violin1.play();
 			hit2.play();
+			antsy = 300;
 		}else{
 			stareLength = 0;
 			violin1.pause();
 		}
-		if(stareLength >= 150){
+		if(stareLength >= attackSpeed){
 			enemy.translateOnAxis(enemy.worldToLocal(
 				new THREE.Vector3(camera.position.x,camera.position.y-0.1,camera.position.z)
 			).normalize(),0.03);
@@ -486,8 +475,7 @@
 		var zDif = eZ - pZ;
 		
 		var theDistance = Math.sqrt((xDif*xDif)+(yDif*yDif)+(zDif*zDif));
-		console.log(theDistance);
-		
+
 		if(theDistance < 1){
 			hit1.volume = 1;
 		} else if(theDistance < 2){
@@ -519,8 +507,6 @@
 				//}
 			//});
 			//dae.scale.x = dae.scale.y = dae.scale.z = 0.15;
-			//dae.position.x = Math.random() * 12 - 6;
-			//dae.position.z = Math.random() * 12 - 6;
 			//dae.position.y = -0.5;
 			//dae.updateMatrix();
 			//dae.name = name;
