@@ -14,7 +14,7 @@
 	var prevPosX, prevPosY, prevPosZ;
 	var hold; //for mouse holding
 	var fVec, theMat, theMesh;
-	var breathing;
+	var breathing, footsteps, collect, violin1, hit1, hit2, bang, creep;
 	var antsy = 300;
 	
 	var MATERIAL = Object.seal({
@@ -38,10 +38,34 @@
 
 		scene = new THREE.Scene();
 		
+		footsteps = new Audio('sound/footsteps.wav');
+		footsteps.volume = 0.5;
+		footsteps.loop = true;
+		
+		
 		breathing = new Audio('sound/breathing.wav');
 		breathing.volume = 0.05;
 		breathing.loop = true;
 		breathing.play();
+		
+		collect = new Audio('sound/collect.wav');
+		collect.volume = 0.07;
+		
+		violin1 = new Audio('sound/scareViolins1.ogg');
+		violin1.loop = true;
+		violin1.volume = 1;
+		
+		hit1 = new Audio('sound/hit1.wav');
+		hit1.volume = 1;
+		
+		hit2 = new Audio('sound/hit2.mp3');
+		hit2.volume = 1;
+		
+		bang = new Audio('sound/bang.wav');
+		bang.volume = 1;
+		
+		creep = new Audio('sound/ambientViolin1.wav');
+		creep.volume = 0.8;
 		
 		camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
 		camera.position.y = 0.25;
@@ -62,6 +86,8 @@
 		
 		document.onmousedown = doMousedown;
 		document.onmouseup = function(){hold = false; console.log("UP");}; //mouse is no longer held
+		document.onkeydown = function(){footsteps.play();};
+		document.onkeyup = function(){footsteps.pause();};
 	
 		// get started!
 		update();
@@ -153,7 +179,7 @@
 		prevPosY = cameraControls.object.position.y;
 		prevPosZ = cameraControls.object.position.z;
 		fVec.applyQuaternion(camera.quaternion);
-
+		
 		if(enemy != undefined){
 			var delta = clock.getDelta();
 			cameraControls.update(delta);
@@ -172,6 +198,14 @@
 			
 			findDistance();
 			
+			if((Math.floor(Math.random() * 60)) == 3){
+				playHit();
+			}
+			if((Math.floor(Math.random() * 1000)) == 3){
+				bang.play();
+			}
+			
+			
 			for(var i = 0; i < transMeshes.length; i++){
 				var ele = document.getElementById("progress");
 				if(hold){
@@ -185,6 +219,18 @@
 					transMeshes[i].material.opacity = 1;
 				}
 			}
+			
+			
+			
+			
+			
+			
+			//for testing purposes
+			enemy.position.set(0,0,0.1);
+			
+			
+			
+			
 		}else{
 			enemy = scene.getObjectByName( "enemy" );
 		}
@@ -244,10 +290,15 @@
 			
 			if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() ){ 
 				if(collisionResults[0].object.name == "collectable"){
+					collect.play();
 					collectableCount --;
 					scene.remove(collisionResults[0].object);
 					collidableMeshes.splice(collidableMeshes.indexOf(collisionResults[0].object),1);
 					document.getElementById("count").innerHTML = collectableCount + "";
+					
+					if(collectableCount < 3){
+						creep.play();
+					}
 				}
 				//make box transparent upon contact with camera
 				//collisionResults[0].object.material.transparent = true;
@@ -347,8 +398,11 @@
 		
 		if(leastDistance < ENEMY.radius){
 			stareLength ++;
+			violin1.play();
+			hit2.play();
 		}else{
 			stareLength = 0;
+			violin1.pause();
 		}
 		if(stareLength >= 150){
 			enemy.translateOnAxis(enemy.worldToLocal(
@@ -417,6 +471,39 @@
 		} else {
 			theBox.material.opacity = 1;
 		}
+	}
+	
+	function playHit(){
+		var pX = camera.position.x;
+		var pY = camera.position.y;
+		var pZ = camera.position.z;
+		var eX = enemy.position.x;
+		var eY = enemy.position.y;
+		var eZ = enemy.position.z;
+		
+		var xDif = eX - pX;
+		var yDif = eY - pY;
+		var zDif = eZ - pZ;
+		
+		var theDistance = Math.sqrt((xDif*xDif)+(yDif*yDif)+(zDif*zDif));
+		console.log(theDistance);
+		
+		if(theDistance < 1){
+			hit1.volume = 1;
+		} else if(theDistance < 2){
+			hit1.volume = 0.8;
+		} else if(theDistance < 3){
+			hit1.volume = 0.6;
+		} else if(theDistance < 4){
+			hit1.volume = 0.4;
+		} else if(theDistance < 5){
+			hit1.volume = 0.2;
+		} else {
+			hit1.volume = 0.1;
+		}
+		hit1.play();
+		
+		
 	}
 	
 	function load(file,name){
