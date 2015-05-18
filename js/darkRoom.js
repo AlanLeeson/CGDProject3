@@ -82,7 +82,7 @@
 	
 		//building
         //var roomGeometry = new THREE.BoxGeometry(20, 5, 20,90,90,90);
-		var roomGeometry = new THREE.BoxGeometry(20, 5, 20,30,30,30);
+		var roomGeometry = new THREE.BoxGeometry(25, 5, 25,30,30,30);
         var roomMaterial = new THREE.MeshLambertMaterial({color: "grey", side: THREE.BackSide});
         var room = new THREE.Mesh(roomGeometry, roomMaterial);
 		room.position.set(0,2,0);
@@ -90,12 +90,15 @@
 		scene.add(room);
 	
 		var boxGeometry = new THREE.BoxGeometry(1,1,1,10,10,10);
-		for(var i = 0; i < 40; i++){
+		for(var i = 0; i < 50; i++){
 			//var object = new THREE.Mesh(boxGeometry,new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 			var object = new THREE.Mesh(boxGeometry, new THREE.MeshLambertMaterial({color: "rgb(51,25,0)"}));
-			object.position.x = Math.random() * 20 - 10;
-			object.position.z = Math.random() * 20 - 10;
-			object.scale.y = Math.random()*1+1;
+			object.position.x = Math.random() * 25 - 12;
+			object.position.z = Math.random() * 25 - 12;
+			object.scale.y = Math.random()*2+1;
+			var ranScale =  Math.random()*1+1;
+			object.scale.x = ranScale;
+			object.scale.z = ranScale;
 			if(!(i<5)){
 				collidableMeshes.push(object);
 			}
@@ -340,10 +343,10 @@
 		}else{
 			stareLength = 0;
 		}
-		if(stareLength >= 100){
+		if(stareLength >= 150){
 			enemy.translateOnAxis(enemy.worldToLocal(
 				new THREE.Vector3(camera.position.x,camera.position.y-0.1,camera.position.z)
-			).normalize(),0.09);
+			).normalize(),0.03);
 		}
 	}
 	
