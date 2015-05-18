@@ -25,6 +25,7 @@
 		enemyMaterial: undefined
 	});
 	
+	//Sets up all variables, sounds, cameras, scene, and calls functions to start the game
 	function setup(){
 		fVec = new THREE.Vector3(0,0,-1);
 		clock = new THREE.Clock();
@@ -33,6 +34,7 @@
 		stareLength = 0;
 		createText("Find the hidden orbs", 10, 10, 150,10,"collectableText");
 		createText(collectableCount, window.innerWidth/2, 10, 150,10,"count");
+		createText("W,A,S,D to move, Mouse to look", 10,180,200,200,"instructions");
 		// create a WebGL renderer
 		renderer = new THREE.WebGLRenderer();
 		renderer.setSize(window.innerWidth, window.innerHeight);
@@ -96,6 +98,7 @@
 		update();
 	}
 	
+	//creates the materials to be used by the models in the scene
 	function createMaterials(){
 		MATERIAL.floorMaterial = new THREE.MeshLambertMaterial(
 		{
@@ -107,6 +110,7 @@
 		});
 	}
 	
+	//creates the models to populate the scene
 	function createModels(){	
 	
 		//building
@@ -154,6 +158,7 @@
 		load("models/monster.dae","enemy");
 	}
 	
+	//Sets up lighting in the scene - flashlight and ambient
 	function createLighting(){
 		var ambient = new THREE.AmbientLight( 0xffffff);
 		ambient.color.setHSL( 0.1, 0.1, 0.1 );
@@ -170,6 +175,7 @@
 		renderer.shadowMapType = THREE.PCFSoftShadowMap;
 	}
 	
+	//all things that need to be constantly called go here
 	function update(){
 		requestAnimationFrame(update);
 		prevPosX = cameraControls.object.position.x;
@@ -247,6 +253,7 @@
 		renderer.render(scene,camera);
 	}
 	
+	//manipulates the enemy position to follow you conditionally
 	function moveEnemy(){
 		antsy --;
 		if(antsy <= 0){
@@ -290,6 +297,7 @@
 		}
 	}
 	
+	//checks collision between player and boxes in the scene
 	function checkBoxCollision(){
 		var originPoint = collider.position.clone();
 		
@@ -336,6 +344,7 @@
 		}	
 	}
 	
+	//checks if player is clicking a box to make it transparent
 	function doMousedown(event) {
 		if(inGame){
 		event.preventDefault();
@@ -365,6 +374,7 @@
 	}
 	
 	//calculate shortest distance between centerpoint and rope line for collision
+	//collision between where the player is looking, and the enemy's radius
 	function findDistance(){
 		var ptX = enemy.position.x;
 		var ptY = enemy.position.y;
@@ -431,6 +441,7 @@
 	}
 	
 	//calculate shortest distance between centerpoint and rope line for collision
+	//if the box is in the view of the player's lookat line
 	function boxInView(theBox){
 		var ptX = theBox.position.x;
 		var ptY = theBox.position.y;
@@ -492,6 +503,7 @@
 		}
 	}
 	
+	//plays the dramatic sound based on the enemy's distance
 	function playHit(){
 		var pX = camera.position.x;
 		var pY = camera.position.y;
@@ -522,6 +534,7 @@
 		hit1.play();
 	}
 	
+	//find if the player got killed by the enemy
 	function findEnd(){
 		var pX = camera.position.x;
 		var pY = camera.position.y;
@@ -541,6 +554,7 @@
 		}
 	}
 	
+	//load the model
 	function load(file,name){
 		var dae;
 		var loader = new THREE.ColladaLoader();
@@ -581,11 +595,13 @@
 		});
 	}
 	
+	//remove everything from the scene
 	function destroyScene(){
 		inGame = false;
 		document.getElementById("restart").style.visibility = "visible";
 	}
 	
+	//reset everything
 	function restart(){
 		for(var i = 0; i < transMeshes.length; i ++){
 			scene.remove(transMeshes[i]);
