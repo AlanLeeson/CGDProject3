@@ -17,6 +17,7 @@
 	var fVec, theMat, theMesh;
 	var breathing, footsteps, collect, violin1, hit1, hit2, bang, creep;
 	var antsy = 300, attackSpeed = 150;
+	var inGame = true;
 	
 	var MATERIAL = Object.seal({
 		boxMaterial: undefined,
@@ -89,6 +90,7 @@
 		document.onmouseup = function(){hold = false;}; //mouse is no longer held
 		document.onkeydown = function(){footsteps.play();};
 		document.onkeyup = function(){footsteps.pause();};
+		document.getElementById("restart").onclick = restart;
 	
 		// get started!
 		update();
@@ -190,7 +192,6 @@
 			flashlight.target = box;
 			enemy.lookAt(camera.position);
 			//collider.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
-			findEnd();
 			findDistance();
 			
 			if(camera.position.x > 12){
@@ -236,6 +237,8 @@
 					transMeshes[i].material.opacity = 1;
 				}
 			}
+			
+			findEnd();
 			
 		}else{
 			enemy = scene.getObjectByName( "enemy" );
@@ -310,6 +313,9 @@
 					if(collectableCount < 3){
 						creep.play();
 					}
+					//if(collectableCount <= 0){
+					//	win();
+					//}
 				}
 				//make box transparent upon contact with camera
 				//collisionResults[0].object.material.transparent = true;
@@ -331,6 +337,7 @@
 	}
 	
 	function doMousedown(event) {
+		if(inGame){
 		event.preventDefault();
 		// 2D point where we clicked on the screen
 		var vector = new THREE.Vector3(( event.clientX / window.innerWidth ) * 2 - 1, -( event.clientY / window.innerHeight ) * 2 + 1, 0.5);
@@ -346,14 +353,15 @@
 		// make sure that these objects are declared in the global scope
 		var enemyClick = raycaster.intersectObjects([enemy]);
 	
-		if (enemyClick.length > 0) {
-			enemyClick[0].object.position.set(Math.random() * 12 - 6,0,Math.random() * 12 - 6);
-			stareLength = 0;
+		if (enemyClick.length > 0 && collectableCount == 0) {
+			scene.remove(enemy);
+			//createText("You Have Rid The World From His Evil.",window.innerWidth/8,
+			//	window.innerHeight/2,window.innerWidth,50,"SuccessScreen");
 		}
 		
 		//mouse is being held
 		hold = true;
-		
+		}
 	}
 	
 	//calculate shortest distance between centerpoint and rope line for collision
@@ -574,13 +582,20 @@
 	}
 	
 	function destroyScene(){
-		console.log("Destroyed");
+		inGame = false;
+		document.getElementById("restart").style.visibility = "visible";
+	}
+	
+	function restart(){
 		for(var i = 0; i < transMeshes.length; i ++){
 			scene.remove(transMeshes[i]);
 		}
 		for(var i = 0; i < collectables.length; i++){
 			scene.remove(collectables[i]);
 		}
+		transMeshes = [];
+		collectables = [];
+		collidableMeshes = [];
 		scene.remove(enemy);
 		scene.remove(box);
 		scene.remove(room);
@@ -589,7 +604,19 @@
 		breathing.pause();
 		footsteps.pause();
 		violin1.pause();
+		
+		createModels();
+		antsy = 300;
+		attackSpeed = 150;
+		collectableCount = 5;
+		inGame = true;
+		document.getElementById("restart").style.visibility = "hidden";
+		document.getElementById("count").innerHTML = collectableCount + "";
 	}
+	
+	//function win(){
+	//	flashlight.distance = 30;
+	//}
 
 	document.body.onload = setup;
 

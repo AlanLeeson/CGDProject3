@@ -15,6 +15,18 @@
 			appearance:none;
 			z-index = 1; 
 		}
+		button{
+			position:absolute;
+			color:#999;
+			font-size:50px;
+			width:200px;
+			height:70px;
+			float:left;
+			left:50%;
+			margin-left:-100px;
+			bottom:50%;
+			visibility:hidden;
+		}
 	</style>
 </head>
 
@@ -25,6 +37,8 @@
 	<script src="js/Detector.js"></script>
 	<script src="js/enemy.js"></script>
 	<script src="js/darkRoom.js"></script>
+	
+	<button type="button" id="restart">Restart</button>
 	
 	<progress id="progress" max="100" value="100"></progress>
 </body>
