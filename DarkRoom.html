@@ -5,6 +5,16 @@
 	<style>
 		body{margin:0;}
 		canvas{width:100%; height:100%}
+		progress{
+			position:absolute;
+			-webkit-appearance:none;
+			background:#eee;
+			width:100%;
+			height:20px;
+			bottom:20px;
+			appearance:none;
+			z-index = 1; 
+		}
 	</style>
 </head>
 
@@ -15,6 +25,8 @@
 	<script src="js/Detector.js"></script>
 	<script src="js/enemy.js"></script>
 	<script src="js/darkRoom.js"></script>
+	
+	<progress id="progress" max="100" value="100"></progress>
 </body>
 
 </html>

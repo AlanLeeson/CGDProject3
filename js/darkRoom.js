@@ -173,9 +173,15 @@
 			findDistance();
 			
 			for(var i = 0; i < transMeshes.length; i++){
+				var ele = document.getElementById("progress");
 				if(hold){
+					ele.value -= 0.02;
 					boxInView(transMeshes[i]);
 				} else {
+					ele.value += 0.01;
+					if(ele.value > 100){
+						ele.value = 100;
+					}
 					transMeshes[i].material.opacity = 1;
 				}
 			}
@@ -286,6 +292,7 @@
 		
 		//mouse is being held
 		hold = true;
+		
 	}
 	
 	//calculate shortest distance between centerpoint and rope line for collision
@@ -401,8 +408,12 @@
 		//return Math.sqrt(dx * dx + dy * dy);
 		
 		if(leastDistance < theBox.radius){
-			theBox.material.transparent = true;
-			theBox.material.opacity = 0.3;
+			if(!(document.getElementById("progress").value <= 0)){
+				theBox.material.transparent = true;
+				theBox.material.opacity = 0.3;
+			}else{
+				theBox.material.opacity = 1;
+			}
 		} else {
 			theBox.material.opacity = 1;
 		}
