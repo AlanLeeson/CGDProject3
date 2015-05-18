@@ -106,7 +106,7 @@
 			}
 		}
 		
-		box = new THREE.Mesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
+		box = new THREE.Mesh(new THREE.BoxGeometry(0.01,0.01,0.01),new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 		scene.add(box);
 		
 		collider = new THREE.Mesh(new THREE.BoxGeometry(1,1,1) );
@@ -149,7 +149,11 @@
 			cameraControls.update(delta);
 			collider.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 			checkBoxCollision();
-			box.position.set(cameraControls.target.x,cameraControls.target.y,cameraControls.target.z);
+			
+			var boxPos = new THREE.Vector3(cameraControls.target.x,cameraControls.target.y,cameraControls.target.z);
+			boxPos.normalize();
+			boxPos.multiplyScalar(2);
+			box.position.set(camera.position.x+boxPos.x,camera.position.y+boxPos.y-0.1,camera.position.z+boxPos.z);
 			flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 			flashlight.target = box;
 			enemy.lookAt(camera.position);
@@ -157,7 +161,6 @@
 			
 			findDistance();
 			
-			//for(var i = 0; i < collidableMeshes.length; i++){
 			for(var i = 0; i < transMeshes.length; i++){
 				if(hold){
 					boxInView(transMeshes[i]);
@@ -165,12 +168,6 @@
 					transMeshes[i].material.opacity = 1;
 				}
 			}
-			
-			
-			
-			//prevPosX = cameraControls.object.position.x;
-			//prevPosY = cameraControls.object.position.y;
-			//prevPosZ = cameraControls.object.position.z;
 		}else{
 			enemy = scene.getObjectByName( "enemy" );
 		}
@@ -357,7 +354,6 @@
 		//return Math.sqrt(dx * dx + dy * dy);
 		
 		if(leastDistance < theBox.radius){
-			console.log("HIT");
 			theBox.material.transparent = true;
 			theBox.material.opacity = 0.3;
 		} else {
