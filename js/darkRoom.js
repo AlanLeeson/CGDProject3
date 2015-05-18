@@ -3,12 +3,13 @@
 (function(){
 
 	var scene, camera, renderer, cameraControls, clock;
-	var box, enemy, floor;
+	var box, enemy, floor, room;
 	var dirLight, flashlight;
 	var stareLength;
 	var rayHandler;
 	var collidableMeshes = [];
 	var transMeshes = [];
+	var collectables = [];
 	var collider;
 	var collectableCount = 5;
 	var prevPosX, prevPosY, prevPosZ;
@@ -110,7 +111,7 @@
         //var roomGeometry = new THREE.BoxGeometry(20, 5, 20,90,90,90);
 		var roomGeometry = new THREE.BoxGeometry(25, 5, 25,30,30,30);
         var roomMaterial = new THREE.MeshLambertMaterial({color: "grey", side: THREE.BackSide});
-        var room = new THREE.Mesh(roomGeometry, roomMaterial);
+        room = new THREE.Mesh(roomGeometry, roomMaterial);
 		room.position.set(0,2,0);
 		room.receiveShadow = true;
 		scene.add(room);
@@ -138,6 +139,7 @@
 				var obj = setUpCollectable(object.position);
 				scene.add(obj);
 				collidableMeshes.push(obj);
+				collectables.push(obj);
 			}
 		}
 		
@@ -188,7 +190,7 @@
 			flashlight.target = box;
 			enemy.lookAt(camera.position);
 			//collider.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
-			
+			findEnd();
 			findDistance();
 			
 			if((Math.floor(Math.random() * 60)) == 3){
@@ -216,9 +218,7 @@
 		}else{
 			enemy = scene.getObjectByName( "enemy" );
 		}
-		
-		
-		
+
 		renderer.render(scene,camera);
 	}
 	
@@ -490,8 +490,25 @@
 			hit1.volume = 0.1;
 		}
 		hit1.play();
+	}
+	
+	function findEnd(){
+		var pX = camera.position.x;
+		var pY = camera.position.y;
+		var pZ = camera.position.z;
+		var eX = enemy.position.x;
+		var eY = enemy.position.y;
+		var eZ = enemy.position.z;
 		
+		var xDif = eX - pX;
+		var yDif = eY - pY;
+		var zDif = eZ - pZ;
 		
+		var theDistance = Math.sqrt((xDif*xDif)+(yDif*yDif)+(zDif*zDif));
+
+		if(theDistance < 0.1){
+			destroyScene();
+		}
 	}
 	
 	function load(file,name){
@@ -532,6 +549,24 @@
 			scene.add(theMesh);
 			
 		});
+	}
+	
+	function destroyScene(){
+		console.log("Destroyed");
+		for(var i = 0; i < transMeshes.length; i ++){
+			scene.remove(transMeshes[i]);
+		}
+		for(var i = 0; i < collectables.length; i++){
+			scene.remove(collectables[i]);
+		}
+		scene.remove(enemy);
+		scene.remove(box);
+		scene.remove(room);
+		scene.remove(collider);
+		enemy = undefined;
+		breathing.pause();
+		footsteps.pause();
+		violin1.pause();
 	}
 
 	document.body.onload = setup;
