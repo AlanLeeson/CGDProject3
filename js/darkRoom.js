@@ -57,7 +57,7 @@
 		violin1.volume = 0.7;
 		
 		hit1 = new Audio('sound/hit1.wav');
-		hit1.volume = 0.7;
+		hit1.volume = 0.6;
 		
 		hit2 = new Audio('sound/hit2.mp3');
 		hit2.volume = 1;
