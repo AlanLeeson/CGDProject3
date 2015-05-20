@@ -11,7 +11,7 @@
 	var transMeshes = [];
 	var collectables = [];
 	var collider;
-	var collectableCount = 5;
+	var collectableCount = 2;
 	var prevPosX, prevPosY, prevPosZ;
 	var hold; //for mouse holding
 	var fVec, theMat, theMesh;
@@ -34,7 +34,10 @@
 		stareLength = 0;
 		createText("Find the hidden orbs", 10, 10, 150,10,"collectableText");
 		createText(collectableCount, window.innerWidth/2, 10, 150,10,"count");
-		createText("W,A,S,D to move, Mouse to look", 10,180,200,200,"instructions");
+		createText("W,A,S,D to move, Mouse to look", 10,190,200,200,"instructions");
+		createText("You Have Rid The World From His Evil.",window.innerWidth/8+20,
+				window.innerHeight/2,window.innerWidth,50,"SuccessScreen");
+		document.getElementById("SuccessScreen").style.visibility = "hidden";
 		// create a WebGL renderer
 		renderer = new THREE.WebGLRenderer();
 		renderer.setSize(window.innerWidth, window.innerHeight);
@@ -115,7 +118,7 @@
 	
 		//building
         //var roomGeometry = new THREE.BoxGeometry(20, 5, 20,90,90,90);
-		var roomGeometry = new THREE.BoxGeometry(25, 5, 25,30,30,30);
+		var roomGeometry = new THREE.BoxGeometry(15, 5, 15,30,30,30);
         var roomMaterial = new THREE.MeshLambertMaterial({color: "grey", side: THREE.BackSide});
         room = new THREE.Mesh(roomGeometry, roomMaterial);
 		room.position.set(0,2,0);
@@ -123,16 +126,16 @@
 		scene.add(room);
 	
 		var boxGeometry = new THREE.BoxGeometry(1,1,1,10,10,10);
-		for(var i = 0; i < 50; i++){
+		for(var i = 0; i < 10; i++){
 			//var object = new THREE.Mesh(boxGeometry,new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 			var object = new THREE.Mesh(boxGeometry, new THREE.MeshLambertMaterial({color: "rgb(51,25,0)"}));
-			object.position.x = Math.random() * 25 - 12;
-			object.position.z = Math.random() * 25 - 12;
+			object.position.x = Math.random() * 15 - 7;
+			object.position.z = Math.random() * 15 - 7;
 			object.scale.y = Math.random()*2+1;
 			var ranScale =  Math.random()*1+1;
 			object.scale.x = ranScale;
 			object.scale.z = ranScale;
-			if(!(i<5)){
+			if(!(i<2)){
 				collidableMeshes.push(object);
 			}
 			transMeshes.push(object);
@@ -140,7 +143,7 @@
 			object.receiveShadow = true;
 			object.castShadow = true;
 			object.radius = object.scale.x/2;
-			if(i < 5){
+			if(i < 2){
 				//create the collectables
 				var obj = setUpCollectable(object.position);
 				scene.add(obj);
@@ -321,9 +324,9 @@
 					if(collectableCount < 3){
 						creep.play();
 					}
-					//if(collectableCount <= 0){
-					//	win();
-					//}
+					if(collectableCount <= 0){
+						win();
+					}
 				}
 				//make box transparent upon contact with camera
 				//collisionResults[0].object.material.transparent = true;
@@ -364,8 +367,7 @@
 	
 		if (enemyClick.length > 0 && collectableCount == 0) {
 			scene.remove(enemy);
-			//createText("You Have Rid The World From His Evil.",window.innerWidth/8,
-			//	window.innerHeight/2,window.innerWidth,50,"SuccessScreen");
+			document.getElementById("SuccessScreen").style.visibility = "visible";
 		}
 		
 		//mouse is being held
@@ -624,15 +626,17 @@
 		createModels();
 		antsy = 300;
 		attackSpeed = 150;
-		collectableCount = 5;
+		collectableCount = 2;
+		flashlight.distance = 6;
 		inGame = true;
 		document.getElementById("restart").style.visibility = "hidden";
 		document.getElementById("count").innerHTML = collectableCount + "";
+		document.getElementById("SuccessScreen").style.visibility = "hidden";
 	}
 	
-	//function win(){
-	//	flashlight.distance = 30;
-	//}
+	function win(){
+		flashlight.distance = 30;
+	}
 
 	document.body.onload = setup;
 
