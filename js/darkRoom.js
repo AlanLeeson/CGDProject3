@@ -129,8 +129,8 @@
 		for(var i = 0; i < 10; i++){
 			//var object = new THREE.Mesh(boxGeometry,new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 			var object = new THREE.Mesh(boxGeometry, new THREE.MeshLambertMaterial({color: "rgb(51,25,0)"}));
-			object.position.x = Math.random() * 15 - 7;
-			object.position.z = Math.random() * 15 - 7;
+			object.position.x = Math.random() * 14 - 7;
+			object.position.z = Math.random() * 14 - 7;
 			object.scale.y = Math.random()*2+1;
 			var ranScale =  Math.random()*1+1;
 			object.scale.x = ranScale;
@@ -204,23 +204,23 @@
 			//collider.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 			findDistance();
 			
-			if(camera.position.x > 12){
-				camera.position.x = 12;
+			if(camera.position.x > 7){
+				camera.position.x = 7;
 				collider.position.set(camera.position.x, camera.position.y-0.1, camera.position.z);
 				flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 				flashlight.target = box;
-			} else if(camera.position.x < -12){
-				camera.position.x = -12;
+			} else if(camera.position.x < -7){
+				camera.position.x = -7;
 				collider.position.set(camera.position.x, camera.position.y-0.1, camera.position.z);
 				flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 				flashlight.target = box;
-			} else if(camera.position.z > 12){
-				camera.position.z = 12;
+			} else if(camera.position.z > 7){
+				camera.position.z = 7;
 				collider.position.set(camera.position.x, camera.position.y-0.1, camera.position.z);
 				flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 				flashlight.target = box;
-			} else if(camera.position.z < -12){
-				camera.position.z = -12;
+			} else if(camera.position.z < -7){
+				camera.position.z = -7;
 				collider.position.set(camera.position.x, camera.position.y-0.1, camera.position.z);
 				flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 				flashlight.target = box;
