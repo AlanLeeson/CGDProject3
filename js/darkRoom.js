@@ -36,7 +36,7 @@
 		createText(collectableCount, window.innerWidth/2, 10, 150,10,"count");
 		createText("W,A,S,D to move, Mouse to look", 10,190,200,200,"instructions");
 		createText("You Have Rid The World From His Evil.",window.innerWidth/8+20,
-				window.innerHeight/2,window.innerWidth,50,"SuccessScreen");
+				window.innerHeight-50,window.innerWidth,50,"SuccessScreen");
 		document.getElementById("SuccessScreen").style.visibility = "hidden";
 		// create a WebGL renderer
 		renderer = new THREE.WebGLRenderer();
@@ -199,6 +199,7 @@
 			box.position.set(camera.position.x+boxPos.x,camera.position.y+boxPos.y-0.1,camera.position.z+boxPos.z);
 			flashlight.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 			flashlight.target = box;
+			flashlight.intensity -= 0.0002;
 			enemy.lookAt(camera.position);
 			//collider.position.set(camera.position.x,camera.position.y-0.1,camera.position.z);
 			findDistance();
@@ -317,6 +318,7 @@
 				if(collisionResults[0].object.name == "collectable"){
 					collect.play();
 					collectableCount --;
+					flashlight.intensity = 0.9;
 					scene.remove(collisionResults[0].object);
 					collidableMeshes.splice(collidableMeshes.indexOf(collisionResults[0].object),1);
 					document.getElementById("count").innerHTML = collectableCount + "";
@@ -628,14 +630,17 @@
 		attackSpeed = 150;
 		collectableCount = 2;
 		flashlight.distance = 6;
+		flashlight.intensity = 0.9;
 		inGame = true;
 		document.getElementById("restart").style.visibility = "hidden";
 		document.getElementById("count").innerHTML = collectableCount + "";
 		document.getElementById("SuccessScreen").style.visibility = "hidden";
+		document.getElementById("collectableText").innerHTML = "Find the hidden orbs";
 	}
 	
 	function win(){
 		flashlight.distance = 30;
+		document.getElementById("collectableText").innerHTML = "Go Get That Man!";
 	}
 
 	document.body.onload = setup;
