@@ -80,9 +80,9 @@
 			
 			THREE.ImageUtils.crossOrigin = '';
 			stareLength = 0;
-			createText("Find the hidden orbs by clicking the mouse to search boxes", 10, 10, 150,10,"collectableText");
+			createText("Find the hidden orbs by clicking the mouse to search boxes", 10, 10, 150,10,"collectableText",30);
 			createText(collectableCount, window.innerWidth/2, 10, 150,10,"count");
-			createText("W,A,S,D to move, Mouse to look", 10,480,200,200,"instructions");
+			createText("W,A,S,D to move, Mouse to look", 10,280,200,200,"instructions",20);
 			createText("You Have Rid The World From His Evil.",window.innerWidth/8+20,
 					window.innerHeight-50,window.innerWidth,50,"SuccessScreen");
 			document.getElementById("SuccessScreen").style.visibility = "hidden";

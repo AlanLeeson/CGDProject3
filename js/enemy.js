@@ -38,14 +38,18 @@ function setUpCollectable(position){
 	return object;
 }
 
-function createText(string, x, y, w, h, id){
+function createText(string, x, y, w, h, id, size){
 	var text2 = document.createElement('div');
 	text2.style.position = 'absolute';
 	//text2.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
 	text2.style.width = w;
 	text2.style.height = h;
 	text2.style.color = "#999";
-	text2.style.fontSize = "40px";
+	if(size){
+		text2.style.fontSize = size +"px";
+	}else{
+		text2.style.fontSize = "40px";
+	}
 	text2.style.fontFamily = "Copperplate , Copperplate Gothic Light, sans-serif";
 	text2.id = id;
 	text2.innerHTML = string + "";
