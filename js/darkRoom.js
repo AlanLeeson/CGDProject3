@@ -45,33 +45,41 @@
 
 		scene = new THREE.Scene();
 		
-		footsteps = new Audio('sound/footsteps.wav');
+		//footsteps = new Audio('sound/footsteps.wav');
+		footsteps = document.querySelector("#footsteps");
 		footsteps.volume = 0.5;
 		footsteps.loop = true;
 		
 		
-		breathing = new Audio('sound/breathing.wav');
+		//breathing = new Audio('sound/breathing.wav');
+		breathing = document.querySelector("#breathing");
 		breathing.volume = 0.05;
 		breathing.loop = true;
 		breathing.play();
 		
-		collect = new Audio('sound/collect.wav');
+		//collect = new Audio('sound/collect.wav');
+		collect = document.querySelector("#collect");
 		collect.volume = 0.07;
 		
-		violin1 = new Audio('sound/scareViolins1.ogg');
+		//violin1 = new Audio('sound/scareViolins1.ogg');
+		violin1 = document.querySelector("#violin1");
 		violin1.loop = true;
 		violin1.volume = 0.7;
 		
-		hit1 = new Audio('sound/hit1.wav');
+		//hit1 = new Audio('sound/hit1.wav');
+		hit1 = document.querySelector("#hit1");
 		hit1.volume = 0.6;
 		
-		hit2 = new Audio('sound/hit2.mp3');
+		//hit2 = new Audio('sound/hit2.mp3');
+		hit2 = document.querySelector("#hit2");
 		hit2.volume = 1;
 		
-		bang = new Audio('sound/bang.wav');
+		//bang = new Audio('sound/bang.wav');
+		bang = document.querySelector("#bang");
 		bang.volume = 1;
 		
-		creep = new Audio('sound/ambientViolin1.wav');
+		//creep = new Audio('sound/ambientViolin1.wav');
+		creep = document.querySelector("#creep");
 		creep.volume = 0.8;
 		
 		camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);

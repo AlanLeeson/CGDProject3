@@ -27,6 +27,9 @@
 			bottom:50%;
 			visibility:hidden;
 		}
+		#audioControls{
+			display:none;
+		}
 	</style>
 </head>
 
@@ -41,6 +44,17 @@
 	<button type="button" id="restart">Restart</button>
 	
 	<progress id="progress" max="100" value="100"></progress>
+	<section id="audioControls">
+		<audio id="breathing" src="sound/breathing.wav" controls loop></audio>
+		<audio id="footsteps" src="sound/footsteps.wav" controls loop></audio>
+		<audio id="collect" src="sound/collect.wav" controls></audio>
+		<audio id="violin1" src="sound/scareViolins1.ogg" controls loop></audio>
+		<audio id="hit1" src="sound/hit1.wav" controls></audio>
+		<audio id="hit2" src="sound/hit2.mp3" controls></audio>
+		<audio id="bang" src="sound/bang.wav" controls></audio>
+		<audio id="creep" src="sound/ambientViolin1.wav" controls></audio>
+	</section>
+		
 </body>
 
 </html>
