@@ -27,24 +27,14 @@
 	
 	//Sets up all variables, sounds, cameras, scene, and calls functions to start the game
 	function setup(){
-		fVec = new THREE.Vector3(0,0,-1);
-		clock = new THREE.Clock();
+	
+		createText("Dark Room",window.innerWidth/2-75,
+				window.innerHeight/2-100,window.innerWidth,50,"TitleScreen");
+		createText("Loading",window.innerWidth/2-50,
+				window.innerHeight/2+10,window.innerWidth,50,"LoadScreen");
+				
 		
-		THREE.ImageUtils.crossOrigin = '';
-		stareLength = 0;
-		createText("Find the hidden orbs", 10, 10, 150,10,"collectableText");
-		createText(collectableCount, window.innerWidth/2, 10, 150,10,"count");
-		createText("W,A,S,D to move, Mouse to look", 10,190,200,200,"instructions");
-		createText("You Have Rid The World From His Evil.",window.innerWidth/8+20,
-				window.innerHeight-50,window.innerWidth,50,"SuccessScreen");
-		document.getElementById("SuccessScreen").style.visibility = "hidden";
-		// create a WebGL renderer
-		renderer = new THREE.WebGLRenderer();
-		renderer.setSize(window.innerWidth, window.innerHeight);
-		document.body.appendChild(renderer.domElement);
-
-		scene = new THREE.Scene();
-		
+				
 		//footsteps = new Audio('sound/footsteps.wav');
 		footsteps = document.querySelector("#footsteps");
 		footsteps.volume = 0.5;
@@ -72,7 +62,7 @@
 		
 		//hit2 = new Audio('sound/hit2.mp3');
 		hit2 = document.querySelector("#hit2");
-		hit2.volume = 1;
+		hit2.volume = 0.3;
 		
 		//bang = new Audio('sound/bang.wav');
 		bang = document.querySelector("#bang");
@@ -81,32 +71,55 @@
 		//creep = new Audio('sound/ambientViolin1.wav');
 		creep = document.querySelector("#creep");
 		creep.volume = 0.8;
-		
-		camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
-		camera.position.y = 0.25;
-		
-		cameraControls = new THREE.FirstPersonControls(camera);
-        cameraControls.lookSpeed = 0.2;
-        cameraControls.movementSpeed = 1;
-        cameraControls.lookVertical = true;
-		
-		hold = false;
-        
+		creep.oncanplaythrough = function(){
+			document.getElementById("LoadScreen").style.visibility = "hidden";
+			document.getElementById("TitleScreen").style.visibility = "hidden";
+			
+			fVec = new THREE.Vector3(0,0,-1);
+			clock = new THREE.Clock();
+			
+			THREE.ImageUtils.crossOrigin = '';
+			stareLength = 0;
+			createText("Find the hidden orbs by clicking the mouse to search boxes", 10, 10, 150,10,"collectableText");
+			createText(collectableCount, window.innerWidth/2, 10, 150,10,"count");
+			createText("W,A,S,D to move, Mouse to look", 10,480,200,200,"instructions");
+			createText("You Have Rid The World From His Evil.",window.innerWidth/8+20,
+					window.innerHeight-50,window.innerWidth,50,"SuccessScreen");
+			document.getElementById("SuccessScreen").style.visibility = "hidden";
+			// create a WebGL renderer
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			document.body.appendChild(renderer.domElement);
 
-		createLighting();
-		createMaterials();
-		createModels();
+			scene = new THREE.Scene();
+			
+			camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
+			camera.position.y = 0.25;
+			
+			cameraControls = new THREE.FirstPersonControls(camera);
+			cameraControls.lookSpeed = 0.2;
+			cameraControls.movementSpeed = 1;
+			cameraControls.lookVertical = true;
+			
+			hold = false;
+			
+
+			createLighting();
+			createMaterials();
+			createModels();
+			
+			//raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3(0,-1,0),0,10);
+			
+			document.onmousedown = doMousedown;
+			document.onmouseup = function(){hold = false;}; //mouse is no longer held
+			document.onkeydown = function(){footsteps.play();};
+			document.onkeyup = function(){footsteps.pause();};
+			document.getElementById("restart").onclick = restart;
 		
-		//raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3(0,-1,0),0,10);
-		
-		document.onmousedown = doMousedown;
-		document.onmouseup = function(){hold = false;}; //mouse is no longer held
-		document.onkeydown = function(){footsteps.play();};
-		document.onkeyup = function(){footsteps.pause();};
-		document.getElementById("restart").onclick = restart;
+			// get started!
+			update();
+		}
 	
-		// get started!
-		update();
 	}
 	
 	//creates the materials to be used by the models in the scene
@@ -643,7 +656,8 @@
 		document.getElementById("restart").style.visibility = "hidden";
 		document.getElementById("count").innerHTML = collectableCount + "";
 		document.getElementById("SuccessScreen").style.visibility = "hidden";
-		document.getElementById("collectableText").innerHTML = "Find the hidden orbs";
+		document.getElementById("collectableText").innerHTML = "Find the hidden orbs by clicking the mouse to search boxes";
+		breathing.play();
 	}
 	
 	function win(){

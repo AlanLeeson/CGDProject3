@@ -3,7 +3,10 @@
 <head>
 	<title>Dark Room</title>
 	<style>
-		body{margin:0;}
+		body{
+			margin:0;
+			background-color: #000000;
+		}
 		canvas{width:100%; height:100%}
 		progress{
 			position:absolute;
@@ -34,6 +37,17 @@
 </head>
 
 <body>
+	<section id="audioControls">
+		<audio id="breathing" src="sound/breathing.wav" preload="auto" controls loop></audio>
+		<audio id="footsteps" src="sound/footsteps.wav" preload="auto" controls loop></audio>
+		<audio id="collect" src="sound/collect.wav" preload="auto" controls></audio>
+		<audio id="violin1" src="sound/scareViolins1.ogg" preload="auto" controls loop></audio>
+		<audio id="hit1" src="sound/hit1.wav" preload="auto" controls></audio>
+		<audio id="hit2" src="sound/hit2.mp3" preload="auto" controls></audio>
+		<audio id="bang" src="sound/bang.wav" preload="auto" controls></audio>
+		<audio id="creep" src="sound/ambientViolin1.wav" preload="auto" controls></audio>
+	</section>
+
 	<script src="js/three.js"></script>
 	<script src="js/FirstPersonControls.js"></script>
 	<script src="js/ColladaLoader.js"></script>
@@ -44,16 +58,6 @@
 	<button type="button" id="restart">Restart</button>
 	
 	<progress id="progress" max="100" value="100"></progress>
-	<section id="audioControls">
-		<audio id="breathing" src="sound/breathing.wav" controls loop></audio>
-		<audio id="footsteps" src="sound/footsteps.wav" controls loop></audio>
-		<audio id="collect" src="sound/collect.wav" controls></audio>
-		<audio id="violin1" src="sound/scareViolins1.ogg" controls loop></audio>
-		<audio id="hit1" src="sound/hit1.wav" controls></audio>
-		<audio id="hit2" src="sound/hit2.mp3" controls></audio>
-		<audio id="bang" src="sound/bang.wav" controls></audio>
-		<audio id="creep" src="sound/ambientViolin1.wav" controls></audio>
-	</section>
 		
 </body>
 
